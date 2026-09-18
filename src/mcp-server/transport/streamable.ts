@@ -80,11 +80,12 @@ export const initStreamableServer: InitTransportServerFunction = (
     }
   });
 
-  app.listen(port, host, (error) => {
-    if (error) {
-      logger.error(`[StreamableServerTransport] Server error: ${error}`);
-      process.exit(1);
-    }
+  const server = app.listen(port, host);
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    logger.error(`[StreamableServerTransport] Server error: ${err}`);
+    process.exit(1);
+  });
+  server.on('listening', () => {
     console.log(`📡 Streamable endpoint: http://${host}:${port}/mcp`);
     logger.info(`[StreamableServerTransport] Streamable endpoint: http://${host}:${port}/mcp`);
   });
