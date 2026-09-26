@@ -19,10 +19,11 @@ export class LarkAuthHandlerLocal extends LarkAuthHandler {
 
     return new Promise((resolve, reject) => {
       logger.info(`[LarkAuthHandlerLocal] Starting server on ${this.options.host}:${this.options.port}`);
-      this.expressServer = this.app.listen(this.options.port, this.options.host, (error) => {
-        if (error) {
-          reject(error);
-        }
+      this.expressServer = this.app.listen(this.options.port, this.options.host);
+      this.expressServer.on('error', (err: NodeJS.ErrnoException) => {
+        reject(err);
+      });
+      this.expressServer.on('listening', () => {
         logger.info(`[LarkAuthHandlerLocal] Server started on ${this.options.host}:${this.options.port}`);
         resolve(true);
       });

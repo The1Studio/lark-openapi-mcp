@@ -73,11 +73,12 @@ export const initSSEServer: InitTransportServerFunction = (
 
   console.log('⚠️ SSE Mode is deprecated and will be removed in a future version. Please use Streamable mode instead.');
 
-  app.listen(port, host, (error) => {
-    if (error) {
-      logger.error(`[SSEServerTransport] Server error: ${error}`);
-      process.exit(1);
-    }
+  const server = app.listen(port, host);
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    logger.error(`[SSEServerTransport] Server error: ${err}`);
+    process.exit(1);
+  });
+  server.on('listening', () => {
     console.log(`📡 SSE endpoint: http://${host}:${port}/sse`);
     logger.info(`[SSEServerTransport] SSE endpoint: http://${host}:${port}/sse`);
   });
